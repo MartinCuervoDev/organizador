@@ -1,0 +1,152 @@
+/* ===== Variables ===== */
+:root {
+  --amarillo: #f8e84d;
+  --gris-oscuro: #1a1a1a;
+  --gris-medio: #2a2a2a;
+  --texto: #ffffff;
+}
+
+/* ===== Base ===== */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--gris-oscuro);
+  color: var(--texto);
+  padding: 2rem;
+}
+
+.contenedor {
+  max-width: 900px;
+  margin: auto;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin-bottom: .5rem;
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+}
+
+/* ===== Bloques ===== */
+.bloque {
+  background: var(--gris-medio);
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Inputs ===== */
+input[type="text"], textarea, input[type="date"] {
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  padding: .5rem;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  height: 100px;
+  resize: none;
+  line-height: 1.5;
+}
+
+.agregar-tarea {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.agregar-tarea input[type="text"] {
+  flex: 1;
+}
+
+/* ===== Botones ===== */
+button {
+  background: var(--amarillo);
+  color: #000;
+  font-weight: 600;
+  border: none;
+  padding: .5rem .8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* ===== Listas ===== */
+.lista {
+  margin-top: 1rem;
+  list-style: none;
+  padding: 0;
+}
+
+.lista li, .idea-item, .note-item {
+  background: #1b1b1b;
+  padding: .7rem 1rem;
+  border-radius: 8px;
+  margin-bottom: .5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 1.4;
+}
+
+.lista li.done span {
+  text-decoration: line-through;
+  opacity: .6;
+  transition: all 0.3s ease;
+}
+
+/* ===== Calendario ===== */
+#calendarContainer {
+  background: var(--amarillo);
+  color: #000;
+  border-radius: 10px;
+  padding: .8rem;
+}
+
+.fc {
+  background: var(--amarillo);
+  border-radius: 8px;
+}
+
+.fc .fc-toolbar-title {
+  text-transform: capitalize;
+  color: #000;
+  font-weight: 700;
+}
+
+.fc .fc-button {
+  background: #111;
+  color: var(--amarillo);
+  border: none;
+  font-weight: 600;
+  border-radius: 5px;
+}
+
+.fc .fc-button:hover {
+  background: #333;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  border-color: #000;
+}
+
+/* ===== Animaciones ===== */
+.fade-in {
+  animation: fadeIn .3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(4px);}
+  to {opacity: 1; transform: translateY(0);}
+}
