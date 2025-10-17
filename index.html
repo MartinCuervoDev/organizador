@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TickLite | Organizador Diario</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Organizador</title>
 
-  <!-- FullCalendar -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css">
+  <!-- FullCalendar CSS -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css"/>
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="styles.css">
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-
   <main class="contenedor">
-
-    <!-- ================= TAREAS ================= -->
+    <!-- TAREAS -->
     <section class="bloque">
       <h2>📝 Mis tareas</h2>
       <div class="agregar-tarea">
-        <input id="taskInput" type="text" placeholder="Nueva tarea...">
-        <input id="taskDate" type="date">
+        <input id="taskInput" type="text" placeholder="Nueva tarea..."/>
+        <input id="taskDate" type="date"/>
         <label><input type="checkbox" id="dailyTask"> Repetir todos los días</label>
         <button id="addTask">➕ Agregar</button>
       </div>
       <ul id="taskList" class="lista"></ul>
     </section>
 
-    <!-- ================= IDEAS ================= -->
+    <!-- IDEAS -->
     <section class="bloque">
       <h2>💭 Ideas</h2>
       <textarea id="ideaArea" placeholder="Escribí una idea..."></textarea>
@@ -35,22 +34,24 @@
       <div id="ideasList" class="lista"></div>
     </section>
 
-    <!-- ================= NOTAS ================= -->
+    <!-- NOTAS -->
     <section class="bloque">
       <h2>📒 Notas</h2>
       <textarea id="noteArea" placeholder="Escribí tus notas..."></textarea>
       <button id="saveNote">💾 Guardar nota</button>
     </section>
 
-    <!-- ================= CALENDARIO ================= -->
+    <!-- CALENDARIO -->
     <section class="bloque">
       <h2>📅 Calendario</h2>
       <div id="calendarContainer"></div>
     </section>
-
   </main>
 
+  <!-- FullCalendar JS (bundle global) -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+  <!-- App -->
   <script src="scripts.js"></script>
 </body>
 </html>
