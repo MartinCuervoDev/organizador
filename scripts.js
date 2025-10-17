@@ -1,83 +1,80 @@
 // ===============================
-// 🧠 TickLite — build estable (dark)
+// 🧠 TickLite v1.5 — Smart Edition (dark)
 // ===============================
 (() => {
   const STORAGE_KEY = 'ticklite_data_v1';
   let data = { tasks: [], notes: '', ideas: [], notesList: [] };
 
-  // ====== Persistencia ======
+  // ===== Persistencia =====
   function save() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (e) {
-      console.warn('No se pudo guardar en localStorage:', e);
-    }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+    catch(e){ console.warn('No se pudo guardar en localStorage:', e); }
   }
-
   function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const parsed = JSON.parse(raw) || {};
-      // Compatibilidad y shape estable
       data.tasks     = Array.isArray(parsed.tasks) ? parsed.tasks : [];
       data.ideas     = Array.isArray(parsed.ideas) ? parsed.ideas : [];
       data.notesList = Array.isArray(parsed.notesList) ? parsed.notesList : [];
       data.notes     = typeof parsed.notes === 'string' ? parsed.notes : '';
-      // Limpiar campos obsoletos si existieran
-      if ('doneDays' in parsed) delete parsed.doneDays;
-    } catch (e) {
-      console.warn('No se pudo cargar localStorage:', e);
-    }
+    } catch(e){ console.warn('No se pudo cargar localStorage:', e); }
   }
 
-  // ====== DOM ======
+  // ===== Utils =====
+  function escapeHtml(s='') {
+    const map = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' };
+    return String(s).replace(/[&<>"']/g, c => map[c]);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
+    // ===== DOM =====
     const taskInput   = document.getElementById('taskInput');
     const taskDate    = document.getElementById('taskDate');
     const taskList    = document.getElementById('taskList');
     const addTaskBtn  = document.getElementById('addTask');
-    const dailyTask   = document.getElementById('dailyTask');
     const noteArea    = document.getElementById('noteArea');
     const saveNoteBtn = document.getElementById('saveNote');
     const calendarEl  = document.getElementById('calendarContainer');
     const ideaArea    = document.getElementById('ideaArea');
     const addIdeaBtn  = document.getElementById('addIdea');
     const ideasList   = document.getElementById('ideasList');
+    const weatherBox  = document.getElementById('weatherWidget');
+    const miniCalEl   = document.getElementById('miniCalendar');
 
-    // Si falta algo crítico, no seguimos para evitar errores en consola
     if (!taskList || !ideasList || !calendarEl) {
       console.error('Faltan elementos clave del DOM. Verificá el HTML.');
       return;
     }
 
-    // ====== Cargar estado y montar UI inicial ======
+    // ===== Carga estado =====
     load();
 
-    // ====== Calendario ======
+    // ===== Calendario principal =====
     let calendar = null;
     function initCalendar() {
-      if (!window.FullCalendar) {
-        console.error('FullCalendar no está disponible.');
-        return;
-      }
+      if (!window.FullCalendar) { console.error('FullCalendar no está disponible.'); return; }
       calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'es',
         buttonText: { today: 'hoy' },
         height: 'auto',
-        // Tomamos los eventos desde el estado actual de forma segura
         events: (data.tasks || [])
           .filter(t => t && t.date)
           .map(t => ({ title: t.text, start: t.date })),
-        dateClick(info) {
-          if (taskDate) taskDate.value = info.dateStr;
+        dateClick(info) { if (taskDate) taskDate.value = info.dateStr; },
+        // Quitamos “de” del título cuando cambian fechas
+        datesSet() {
+          const titleEl = calendarEl.querySelector('.fc-toolbar-title');
+          if (titleEl) titleEl.textContent = titleEl.textContent.replace(/\sde\s/gi, ' ');
         }
-        // IMPORTANTE: no manipulamos el título aquí para evitar duplicaciones
       });
       calendar.render();
+      // Ajuste inicial del “de”
+      const titleEl = calendarEl.querySelector('.fc-toolbar-title');
+      if (titleEl) titleEl.textContent = titleEl.textContent.replace(/\sde\s/gi, ' ');
     }
-
     function updateCalendarEvents() {
       if (!calendar) return;
       calendar.removeAllEvents();
@@ -86,21 +83,84 @@
       });
     }
 
-    // ====== Tareas ======
+    // ===== Mini Calendario (sin eventos) =====
+    function initMiniCalendar() {
+      if (!window.FullCalendar || !miniCalEl) return;
+      const mini = new FullCalendar.Calendar(miniCalEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        height: 200,
+        headerToolbar: { left: 'title', center: '', right: 'prev,next' },
+        datesSet() {
+          const t = miniCalEl.querySelector('.fc-toolbar-title');
+          if (t) t.textContent = t.textContent.replace(/\sde\s/gi, ' ');
+        }
+      });
+      mini.render();
+      const t = miniCalEl.querySelector('.fc-toolbar-title');
+      if (t) t.textContent = t.textContent.replace(/\sde\s/gi, ' ');
+    }
+
+    // ===== TAREAS =====
     function renderTasks() {
       taskList.innerHTML = '';
       (data.tasks || []).forEach(t => {
         const li = document.createElement('li');
         li.className = (t.done ? 'done ' : '') + 'fade-in';
-        li.innerHTML = `
-          <span>${escapeHtml(t.text)}${t.daily ? ' 🔁' : ''}${t.date ? ' (' + t.date + ')' : ''}</span>
-          <div>
-            <button class="ok" aria-label="Marcar como completada">✔</button>
-            <button class="del" aria-label="Eliminar tarea">🗑️</button>
-          </div>
-        `;
-        li.querySelector('.ok').addEventListener('click', () => toggleTask(t.id));
-        li.querySelector('.del').addEventListener('click', () => deleteTask(t.id));
+
+        const left = document.createElement('div');
+        left.className = 'item-left';
+        const span = document.createElement('span');
+        span.textContent = t.text;
+        left.appendChild(span);
+        if (t.date) {
+          const sm = document.createElement('small');
+          sm.className = 'meta';
+          sm.textContent = `📅 ${t.date}`;
+          left.appendChild(sm);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'item-actions';
+        const okBtn   = Object.assign(document.createElement('button'), { className:'icon', textContent:'✔', title:'Completar' });
+        const editBtn = Object.assign(document.createElement('button'), { className:'icon', textContent:'✏️', title:'Editar' });
+        const saveBtn = Object.assign(document.createElement('button'), { className:'icon hidden', textContent:'💾', title:'Guardar' });
+        const delBtn  = Object.assign(document.createElement('button'), { className:'icon', textContent:'🗑️', title:'Eliminar' });
+
+        // Toggle done
+        okBtn.addEventListener('click', () => { t.done = !t.done; save(); renderTasks(); });
+
+        // Editar inline
+        editBtn.addEventListener('click', () => {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = t.text;
+          input.style.width = '100%';
+          left.replaceChild(input, span);
+          editBtn.classList.add('hidden');
+          saveBtn.classList.remove('hidden');
+          input.focus();
+          input.addEventListener('keydown', e => { if(e.key==='Enter') saveBtn.click(); });
+        });
+
+        // Guardar edición
+        saveBtn.addEventListener('click', () => {
+          const input = left.querySelector('input[type="text"]');
+          const newVal = (input?.value || '').trim();
+          if (!newVal) return;
+          t.text = newVal;
+          save(); renderTasks();
+        });
+
+        // Eliminar
+        delBtn.addEventListener('click', () => {
+          if (!confirm('¿Seguro que querés eliminar esta tarea?')) return;
+          data.tasks = (data.tasks || []).filter(x => x.id !== t.id);
+          save(); renderTasks();
+        });
+
+        actions.append(okBtn, editBtn, saveBtn, delBtn);
+        li.append(left, actions);
         taskList.appendChild(li);
       });
       updateCalendarEvents();
@@ -110,45 +170,24 @@
       const text = (taskInput?.value || '').trim();
       const date = (taskDate?.value || '').trim();
       if (!text) return;
-
-      data.tasks.unshift({
-        id: Date.now(),
-        text,
-        done: false,
-        // daily queda por compatibilidad visual en UI (se muestra con 🔁 si está tildado)
-        daily: !!(dailyTask && dailyTask.checked),
-        date: date || null
-      });
-
-      if (taskInput) taskInput.value = '';
-      if (taskDate)  taskDate.value  = '';
-      if (dailyTask) dailyTask.checked = false;
+      if (!date) {
+        alert('Por favor seleccioná una fecha antes de agregar la tarea.');
+        taskDate?.classList.add('error');
+        taskDate?.focus();
+        setTimeout(() => taskDate?.classList.remove('error'), 1200);
+        return;
+      }
+      data.tasks.unshift({ id: Date.now(), text, done:false, date });
+      taskInput.value=''; taskDate.value='';
       taskInput?.focus();
-
-      renderTasks();
-      save();
-    }
-
-    function toggleTask(id) {
-      const t = (data.tasks || []).find(x => x.id === id);
-      if (t) t.done = !t.done;
-      renderTasks();
-      save();
-    }
-
-    function deleteTask(id) {
-      if (!confirm('¿Seguro que querés eliminar esta tarea?')) return;
-      data.tasks = (data.tasks || []).filter(t => t.id !== id);
-      renderTasks();
-      save();
+      save(); renderTasks();
     }
 
     addTaskBtn?.addEventListener('click', addTask);
-    taskInput?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') addTask();
-    });
+    taskInput?.addEventListener('keydown', e => { if(e.key==='Enter') addTask(); });
+    taskDate?.addEventListener('keydown', e => { if(e.key==='Enter') addTask(); });
 
-    // ====== Ideas ======
+    // ===== IDEAS =====
     function renderIdeas() {
       ideasList.innerHTML = '';
       const arr = data.ideas || [];
@@ -159,22 +198,52 @@
       arr.forEach(i => {
         const item = document.createElement('div');
         item.className = 'idea-item fade-in';
-        item.innerHTML = `
-          <p>${escapeHtml(i.text)}</p>
-          <small>🕓 ${escapeHtml(i.createdAt || '')}</small>
-          <button class="delete-idea" title="Eliminar">🗑️</button>
-        `;
-        item.querySelector('.delete-idea').addEventListener('click', () => {
+
+        const left = document.createElement('div');
+        left.className = 'item-left';
+        const p = document.createElement('p');
+        p.innerHTML = escapeHtml(i.text);
+        const meta = document.createElement('small');
+        meta.className = 'meta';
+        meta.textContent = `🕓 ${i.createdAt || ''}`;
+        left.append(p, meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'item-actions';
+        const editBtn = Object.assign(document.createElement('button'), { className:'icon', textContent:'✏️', title:'Editar' });
+        const saveBtn = Object.assign(document.createElement('button'), { className:'icon hidden', textContent:'💾', title:'Guardar' });
+        const delBtn  = Object.assign(document.createElement('button'), { className:'icon', textContent:'🗑️', title:'Eliminar' });
+
+        editBtn.addEventListener('click', () => {
+          const ta = document.createElement('textarea');
+          ta.value = i.text;
+          left.replaceChild(ta, p);
+          editBtn.classList.add('hidden');
+          saveBtn.classList.remove('hidden');
+          ta.focus();
+        });
+
+        saveBtn.addEventListener('click', () => {
+          const ta = left.querySelector('textarea');
+          const nv = (ta?.value || '').trim();
+          if (!nv) return;
+          i.text = nv;
+          save(); renderIdeas();
+        });
+
+        delBtn.addEventListener('click', () => {
           if (!confirm('¿Eliminar esta idea?')) return;
           data.ideas = (data.ideas || []).filter(x => x.id !== i.id);
-          renderIdeas();
-          save();
+          save(); renderIdeas();
         });
+
+        actions.append(editBtn, saveBtn, delBtn);
+        item.append(left, actions);
         ideasList.appendChild(item);
       });
     }
 
-    addIdeaBtn?.addEventListener('click', (e) => {
+    addIdeaBtn?.addEventListener('click', e => {
       e.preventDefault();
       const text = (ideaArea?.value || '').trim();
       if (!text) return;
@@ -184,13 +253,11 @@
         text,
         createdAt: new Date().toLocaleString('es-AR', { dateStyle:'short', timeStyle:'short' })
       });
-      ideaArea.value = '';
-      ideaArea.focus();
-      renderIdeas();
-      save();
+      ideaArea.value = ''; ideaArea.focus();
+      save(); renderIdeas();
     });
 
-    // ====== Notas ======
+    // ===== NOTAS =====
     const notesListContainer = document.createElement('div');
     notesListContainer.id = 'notesList';
     saveNoteBtn?.parentNode?.insertBefore(notesListContainer, saveNoteBtn.nextSibling);
@@ -205,17 +272,45 @@
       notes.forEach(note => {
         const div = document.createElement('div');
         div.className = 'note-item fade-in';
-        div.innerHTML = `
-          <p>${escapeHtml(note.text)}</p>
-          <small>🕓 ${escapeHtml(note.date || '')}</small>
-          <button class="delete-note">🗑️</button>
-        `;
-        div.querySelector('.delete-note').addEventListener('click', () => {
+
+        const left = document.createElement('div');
+        left.className = 'item-left';
+        const p = document.createElement('p');
+        p.innerHTML = escapeHtml(note.text);
+        const meta = document.createElement('small');
+        meta.className = 'meta';
+        meta.textContent = `🕓 ${note.date || ''}`;
+        left.append(p, meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'item-actions';
+        const editBtn = Object.assign(document.createElement('button'), { className:'icon', textContent:'✏️', title:'Editar' });
+        const saveBtn = Object.assign(document.createElement('button'), { className:'icon hidden', textContent:'💾', title:'Guardar' });
+        const delBtn  = Object.assign(document.createElement('button'), { className:'icon', textContent:'🗑️', title:'Eliminar' });
+
+        editBtn.addEventListener('click', () => {
+          const ta = document.createElement('textarea');
+          ta.value = note.text;
+          left.replaceChild(ta, p);
+          editBtn.classList.add('hidden');
+          saveBtn.classList.remove('hidden');
+          ta.focus();
+        });
+        saveBtn.addEventListener('click', () => {
+          const ta = left.querySelector('textarea');
+          const nv = (ta?.value || '').trim();
+          if (!nv) return;
+          note.text = nv;
+          save(); renderNotes();
+        });
+        delBtn.addEventListener('click', () => {
           if (!confirm('¿Eliminar esta nota?')) return;
           data.notesList = (data.notesList || []).filter(n => n.id !== note.id);
-          renderNotes();
-          save();
+          save(); renderNotes();
         });
+
+        actions.append(editBtn, saveBtn, delBtn);
+        div.append(left, actions);
         notesListContainer.appendChild(div);
       });
     }
@@ -229,23 +324,39 @@
         text,
         date: new Date().toLocaleString('es-AR', { dateStyle:'short', timeStyle:'short' })
       });
-      noteArea.value = '';
-      noteArea.focus();
-      renderNotes();
-      save();
+      noteArea.value = ''; noteArea.focus();
+      save(); renderNotes();
     });
 
-    // ====== Utils ======
-    function escapeHtml(s='') {
-      const map = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' };
-      return String(s).replace(/[&<>"']/g, c => map[c]);
-    }
+    // ===== Clima =====
+    (function initWeather(){
+      if (!weatherBox) return;
+      const API_KEY = ''; // ← PONÉ TU API KEY DE OpenWeatherMap (gratis)
+      const CITY = 'Cordoba,AR'; // cambialo si querés
+      if (!API_KEY) {
+        weatherBox.innerHTML = 'Clima: agregá tu API key de OpenWeatherMap';
+        return;
+      }
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=metric&appid=${API_KEY}`)
+        .then(r => r.json())
+        .then(d => {
+          if (!d || !d.main) { weatherBox.textContent = 'Clima no disponible'; return; }
+          const temp = Math.round(d.main.temp);
+          const icon = d.weather?.[0]?.icon || '01d';
+          weatherBox.innerHTML = `
+            <span>${temp}°C</span>
+            <img src="https://openweathermap.org/img/wn/${icon}.png" alt="" width="32" height="32">
+            <small>${CITY.replace(',',' / ')}</small>
+          `;
+        })
+        .catch(() => weatherBox.textContent = 'Clima no disponible');
+    })();
 
-    // ====== Boot ======
+    // ===== Boot =====
     renderIdeas();
     renderTasks();
     renderNotes();
     initCalendar();
-    // (no llamamos updateCalendarEvents() acá; renderTasks() ya lo hace)
+    initMiniCalendar();
   });
 })();

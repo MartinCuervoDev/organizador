@@ -1,6 +1,7 @@
 /* ===== Tema dark ===== */
 :root{
   --amarillo: #f8e84d;
+  --amarillo-strong: #ffeb3b;
   --gris-oscuro: #1a1a1a;
   --gris-medio: #2a2a2a;
   --texto: #ffffff;
@@ -43,6 +44,7 @@ input[type="text"], input[type="date"], textarea{
   padding:.6rem .7rem;
 }
 .agregar-tarea input[type="text"]{ flex:1; }
+input.error { border-color: #ff7676; box-shadow:0 0 0 2px rgba(255,118,118,.25); }
 textarea{ height:110px; resize:none; line-height:1.5; }
 
 /* Botones */
@@ -56,6 +58,8 @@ button{
   transition:.2s transform;
 }
 button:hover{ transform: scale(1.05); }
+button.icon{ padding:.4rem .6rem; border-radius:8px; }
+button.hidden{ display:none; }
 
 /* Listas */
 .lista{ list-style:none; padding:0; margin:1rem 0 0 0; }
@@ -64,11 +68,19 @@ button:hover{ transform: scale(1.05); }
   padding:.75rem 1rem;
   border-radius:10px;
   margin-bottom:.6rem;
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:flex-start; justify-content:space-between;
   gap:.75rem;
   line-height:1.4;
 }
+.item-left{ flex:1; }
+.item-actions{ display:flex; gap:.4rem; align-items:center; }
 .lista li.done span{ text-decoration: line-through; opacity:.6; transition:.3s; }
+.meta{
+  display:block;
+  margin-top:.25rem;
+  opacity:.6;
+  font-size:.85em;
+}
 
 /* Calendario */
 #calendarContainer{
@@ -87,6 +99,18 @@ button:hover{ transform: scale(1.05); }
 }
 .fc .fc-button:hover{ background:#333; }
 .fc-theme-standard .fc-scrollgrid{ border-color:#000; }
+.fc-day-today{
+  background: var(--amarillo-strong) !important;
+  border: 2px solid #000 !important;
+  box-shadow: 0 0 10px rgba(255,255,0,0.35);
+}
+
+/* Evento con borde tenue */
+.fc-event{
+  border:1px solid rgba(0,0,0,.3);
+  border-radius:6px;
+  padding:1px 2px;
+}
 
 /* Animación */
 .fade-in{ animation: fadeIn .28s ease-in; }
@@ -94,3 +118,54 @@ button:hover{ transform: scale(1.05); }
 
 /* Accesibilidad menor */
 button:focus, input:focus, textarea:focus{ outline:2px solid #888; outline-offset: 2px; }
+
+/* Sidebar fijo */
+#sidebar-widgets{
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+  z-index: 1000;
+}
+#weatherWidget{
+  background:#222;
+  color: var(--amarillo);
+  padding:.5rem .8rem;
+  border-radius:10px;
+  font-weight:700;
+  display:flex; align-items:center; gap:.5rem;
+  min-width: 160px;
+}
+#weatherWidget small{ color:#ddd; font-weight:400; }
+#miniCalendar{
+  background:#111;
+  border-radius:10px;
+  padding:.3rem;
+  width: 240px;
+  height: 220px;
+  font-size:.8em;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  color: #ccc;
+  font-size: 0.9em;
+  padding: 1rem 0;
+  opacity: .7;
+  margin-top: 2rem;
+}
+.footer span { font-weight: bold; color: #ff0; }
+
+/* Responsive: si la pantalla es estrecha, bajamos el sidebar */
+@media (max-width: 900px){
+  #sidebar-widgets{
+    position: static;
+    align-items: stretch;
+    margin-bottom: 1rem;
+  }
+  body{ padding-top: 1rem; }
+}

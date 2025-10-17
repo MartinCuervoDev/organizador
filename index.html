@@ -3,16 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Organizador</title>
+  <title>TickLite | Organizador</title>
 
   <!-- FullCalendar CSS -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css"/>
 
   <!-- Estilos propios -->
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
+  <!-- SIDEBAR FIJO (clima + mini calendario) -->
+  <aside id="sidebar-widgets">
+    <div id="weatherWidget">Cargando clima…</div>
+    <div id="miniCalendar"></div>
+  </aside>
+
   <main class="contenedor">
     <!-- TAREAS -->
     <section class="bloque">
@@ -20,7 +25,6 @@
       <div class="agregar-tarea">
         <input id="taskInput" type="text" placeholder="Nueva tarea..."/>
         <input id="taskDate" type="date"/>
-        <label><input type="checkbox" id="dailyTask"> Repetir todos los días</label>
         <button id="addTask">➕ Agregar</button>
       </div>
       <ul id="taskList" class="lista"></ul>
@@ -29,7 +33,7 @@
     <!-- IDEAS -->
     <section class="bloque">
       <h2>💭 Ideas</h2>
-      <textarea id="ideaArea" placeholder="Escribí una idea..."></textarea>
+      <textarea id="ideaArea" placeholder="💭 Escribí una idea para no olvidarla..."></textarea>
       <button id="addIdea">💡 Agregar idea</button>
       <div id="ideasList" class="lista"></div>
     </section>
@@ -37,7 +41,7 @@
     <!-- NOTAS -->
     <section class="bloque">
       <h2>📒 Notas</h2>
-      <textarea id="noteArea" placeholder="Escribí tus notas..."></textarea>
+      <textarea id="noteArea" placeholder="✏️ Anotá algo importante..."></textarea>
       <button id="saveNote">💾 Guardar nota</button>
     </section>
 
@@ -48,9 +52,12 @@
     </section>
   </main>
 
-  <!-- FullCalendar JS (bundle global) -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <footer class="footer">
+    Copyright © MC-Portfolio 2025 Martín Cuervo — Powered by <span id="logo-slot"></span>
+  </footer>
 
+  <!-- FullCalendar bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
   <!-- App -->
   <script src="scripts.js"></script>
 </body>
