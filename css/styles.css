@@ -1,0 +1,197 @@
+:root {
+  --amarillo: #f8e84d;
+  --amarillo-strong: #ffeb3b;
+  --gris-oscuro: #1a1a1a;
+  --gris-medio: #2a2a2a;
+  --texto: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+  background: var(--gris-oscuro);
+  color: var(--texto);
+  padding: 2rem;
+}
+
+.contenedor {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bloque {
+  background: var(--gris-medio);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
+}
+
+.agregar-tarea {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.agregar-tarea input[type=text] {
+  flex: 1;
+}
+
+input,
+textarea {
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  width: 100%;
+}
+input.error,
+textarea.error {
+  border-color: #ff7676;
+  box-shadow: 0 0 0 2px rgba(255, 118, 118, 0.25);
+}
+
+textarea {
+  height: 110px;
+  resize: none;
+  line-height: 1.5;
+}
+
+button {
+  background: var(--amarillo);
+  color: #000;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  transition: 0.2s transform;
+}
+button:hover {
+  transform: scale(1.05);
+}
+button.icon {
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+}
+button.hidden {
+  display: none;
+}
+
+.lista {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
+}
+.lista li,
+.lista .idea-item,
+.lista .note-item {
+  background: #1b1b1b;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  line-height: 1.4;
+}
+.lista li .item-left,
+.lista .idea-item .item-left,
+.lista .note-item .item-left {
+  flex: 1;
+}
+.lista li .item-actions,
+.lista .idea-item .item-actions,
+.lista .note-item .item-actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.lista li.done span,
+.lista .idea-item.done span,
+.lista .note-item.done span {
+  text-decoration: line-through;
+  opacity: 0.6;
+  transition: 0.3s;
+}
+.lista li .meta,
+.lista .idea-item .meta,
+.lista .note-item .meta {
+  display: block;
+  margin-top: 0.25rem;
+  opacity: 0.6;
+  font-size: 0.85em;
+}
+
+#calendarContainer {
+  background: var(--amarillo);
+  color: #000;
+  border-radius: 12px;
+  padding: 0.8rem;
+}
+#calendarContainer .fc {
+  background: var(--amarillo);
+  border-radius: 10px;
+}
+#calendarContainer .fc .fc-toolbar-title {
+  text-transform: capitalize;
+  color: #000;
+  font-weight: 800;
+}
+#calendarContainer .fc .fc-button {
+  background: #111;
+  color: var(--amarillo);
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+}
+#calendarContainer .fc .fc-button:hover {
+  background: #333;
+}
+#calendarContainer .fc .fc-theme-standard .fc-scrollgrid {
+  border-color: #000;
+}
+#calendarContainer .fc .fc-day-today {
+  background: var(--amarillo-strong) !important;
+  border: 2px solid #000 !important;
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.35);
+}
+#calendarContainer .fc .fc-event {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  padding: 1px 2px;
+}
+#calendarContainer .fc .fc-theme-standard td,
+#calendarContainer .fc .fc-theme-standard th {
+  border: 1px solid #000;
+}
+
+.footer {
+  text-align: center;
+  color: #ccc;
+  font-size: 0.9em;
+  padding: 1rem 0;
+  opacity: 0.7;
+  margin-top: 2rem;
+}
+.footer span {
+  font-weight: bold;
+  color: #ff0;
+}
+
+/*# sourceMappingURL=styles.css.map */
