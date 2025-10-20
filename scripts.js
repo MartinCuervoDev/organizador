@@ -283,46 +283,11 @@
       calendar.removeAllEvents();
       data.tasks.forEach(t => calendar.addEvent({ title: t.text, start: t.date }));
     }
-
-    // ===== MINI CALENDARIO =====
-    function initMiniCalendar() {
-      const mini = new FullCalendar.Calendar(miniCalEl, {
-        initialView: 'dayGridMonth',
-        locale: 'es',
-        headerToolbar: { left: 'title', right: 'prev,next' },
-        titleFormat: { year: 'numeric', month: 'long' },
-        height: 260
-      });
-      mini.render();
-    }
-
-    // ===== CLIMA =====
-    async function loadWeather() {
-      const API_KEY = ''; // ← tu key aquí
-      const CITY = 'Cordoba,AR'; // ← cambiá tu ciudad
-      try {
-        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=metric&appid=${API_KEY}`);
-        if (!res.ok) throw new Error();
-        const d = await res.json();
-        const c = Math.round(d.main.temp);
-        const f = Math.round((c * 9) / 5 + 32);
-        const icon = d.weather[0].icon;
-        weatherBox.innerHTML = `
-          <img src="https://openweathermap.org/img/wn/${icon}.png" width="30" alt="">
-          <span>${c}°C / ${f}°F</span>
-          <small>${CITY.replace(',',' / ')}</small>
-        `;
-      } catch {
-        weatherBox.innerHTML = '<small>⚠️ Clima no disponible</small>';
-      }
-    }
-
+    
     // ===== Inicialización =====
     renderTasks();
     renderIdeas();
     renderNotes();
     initCalendar();
-    initMiniCalendar();
-    loadWeather();
   });
 })();

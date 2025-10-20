@@ -129,37 +129,8 @@ button.hidden { display: none; }
   border-radius: 6px;
   padding: 1px 2px;
 }
-
-/* Sidebar widgets */
-#sidebar-widgets {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1rem;
-  z-index: 1000;
-}
-#weatherWidget {
-  background: #222;
-  color: var(--amarillo);
-  padding: .5rem .8rem;
-  border-radius: 10px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  max-width: 200px;
-  text-align: right;
-}
-#miniCalendar {
-  background: #111;
-  border-radius: 10px;
-  padding: .3rem;
-  width: 260px;
-  height: 260px;
-  font-size: .8em;
+.fc-theme-standard td, .fc-theme-standard th {
+	border: 1px solid #000;
 }
 
 /* Footer (mantiene el tuyo) */
@@ -174,9 +145,4 @@ button.hidden { display: none; }
 .footer span {
   font-weight: bold;
   color: #ff0;
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  #sidebar-widgets { display: none !important; }
 }
