@@ -29,102 +29,115 @@
     const ideaArea = document.getElementById('ideaArea');
     const addIdeaBtn = document.getElementById('addIdea');
     const ideasList = document.getElementById('ideasList');
-    const weatherBox = document.getElementById('weatherWidget');
     const calendarEl = document.getElementById('calendarContainer');
-    const miniCalEl = document.getElementById('miniCalendar');
 
     // ===== Cargar datos =====
     load();
 
     // ===== TAREAS =====
-    function renderTasks() {
-      taskList.innerHTML = '';
-      data.tasks.forEach(t => {
-        const li = document.createElement('li');
-        li.className = t.done ? 'done' : '';
+  function renderTasks() {
+    taskList.innerHTML = '';
+    data.tasks.forEach(t => {
+      const li = document.createElement('li');
+      li.className = t.done ? 'done' : '';
 
-        const left = document.createElement('div');
-        left.className = 'item-left';
-        const span = document.createElement('span');
-        span.textContent = t.text;
-        left.appendChild(span);
-        if (t.date) {
-          const small = document.createElement('small');
-          small.className = 'meta';
-          small.textContent = `📅 ${t.date}`;
-          left.appendChild(small);
-        }
+      const left = document.createElement('div');
+      left.className = 'item-left';
 
-        const actions = document.createElement('div');
-        actions.className = 'item-actions';
-        const ok = document.createElement('button');
-        ok.className = 'icon';
-        ok.textContent = '✔';
-        ok.onclick = () => { t.done = !t.done; save(); renderTasks(); };
+      // === Cuadrado check a la izquierda ===
+      const check = document.createElement('div');
+      check.className = 'check';
+      if (t.done) check.classList.add('checked');
+      check.onclick = () => {
+        t.done = !t.done;
+        save();
+        renderTasks();
+        updateCalendar();
+      };
+      left.appendChild(check);
 
-        const edit = document.createElement('button');
-        edit.className = 'icon';
-        edit.textContent = '✏️';
-        const saveBtn = document.createElement('button');
-        saveBtn.className = 'icon hidden';
-        saveBtn.textContent = '💾';
-        const del = document.createElement('button');
-        del.className = 'icon';
-        del.textContent = '🗑️';
-        del.onclick = () => {
-          if (confirm('¿Eliminar esta tarea?')) {
-            data.tasks = data.tasks.filter(x => x.id !== t.id);
-            save();
-            renderTasks();
-            updateCalendar();
-          }
-        };
-        edit.onclick = () => {
-          const input = document.createElement('input');
-          input.value = t.text;
-          left.replaceChild(input, span);
-          edit.classList.add('hidden');
-          saveBtn.classList.remove('hidden');
-          input.focus();
-          input.addEventListener('keydown', e => { if (e.key === 'Enter') saveBtn.click(); });
-          saveBtn.onclick = () => {
-            const val = input.value.trim();
-            if (!val) return;
-            t.text = val;
-            save();
-            renderTasks();
-            updateCalendar();
-          };
-        };
-        actions.append(ok, edit, saveBtn, del);
-        li.append(left, actions);
-        taskList.appendChild(li);
-      });
+      const span = document.createElement('span');
+      span.textContent = t.text;
+      left.appendChild(span);
+
+    if (t.date) {
+      const small = document.createElement('small');
+      small.className = 'meta';
+      small.textContent = `📅 ${t.date}`;
+      left.appendChild(small);
     }
 
-    function addTask() {
-      const text = taskInput.value.trim();
-      const date = taskDate.value.trim();
-      if (!text) return;
-      if (!date) {
-        alert('Por favor seleccioná una fecha antes de agregar la tarea.');
-        taskDate.classList.add('error');
-        taskDate.focus();
-        setTimeout(() => taskDate.classList.remove('error'), 1200);
-        return;
+    const actions = document.createElement('div');
+    actions.className = 'item-actions';
+
+    const edit = document.createElement('button');
+    edit.className = 'icon';
+    edit.textContent = '✏️';
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'icon hidden';
+    saveBtn.textContent = '💾';
+
+    const del = document.createElement('button');
+    del.className = 'icon';
+    del.textContent = '🗑️';
+    del.onclick = () => {
+      if (confirm('¿Eliminar esta tarea?')) {
+        data.tasks = data.tasks.filter(x => x.id !== t.id);
+        save();
+        renderTasks();
+        updateCalendar();
       }
-      data.tasks.push({ id: Date.now(), text, date, done: false });
-      save();
-      taskInput.value = '';
-      taskDate.value = '';
-      renderTasks();
-      updateCalendar();
-    }
-    addTaskBtn.onclick = addTask;
-    taskInput.onkeydown = e => { if (e.key === 'Enter') addTask(); };
-    taskDate.onkeydown = e => { if (e.key === 'Enter') addTask(); };
-    taskDate.onchange = () => taskDate.classList.remove('error');
-    taskDate.min = new Date().toISOString().split('T')[0];
+    };
+
+    edit.onclick = () => {
+      const input = document.createElement('input');
+      input.value = t.text;
+      left.replaceChild(input, span);
+      edit.classList.add('hidden');
+      saveBtn.classList.remove('hidden');
+      input.focus();
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') saveBtn.click(); });
+      saveBtn.onclick = () => {
+        const val = input.value.trim();
+        if (!val) return;
+        t.text = val;
+        save();
+        renderTasks();
+        updateCalendar();
+      };
+    };
+
+    actions.append(edit, saveBtn, del);
+    li.append(left, actions);
+    taskList.appendChild(li);
+  });
+}
+
+function addTask() {
+  const text = taskInput.value.trim();
+  const date = taskDate.value.trim();
+  if (!text) return;
+  if (!date) {
+    alert('Por favor seleccioná una fecha antes de agregar la tarea.');
+    taskDate.classList.add('error');
+    taskDate.focus();
+    setTimeout(() => taskDate.classList.remove('error'), 1200);
+    return;
+  }
+  data.tasks.push({ id: Date.now(), text, date, done: false });
+  save();
+  taskInput.value = '';
+  taskDate.value = '';
+  renderTasks();
+  updateCalendar();
+}
+
+addTaskBtn.onclick = addTask;
+taskInput.onkeydown = e => { if (e.key === 'Enter') addTask(); };
+taskDate.onkeydown = e => { if (e.key === 'Enter') addTask(); };
+taskDate.onchange = () => taskDate.classList.remove('error');
+taskDate.min = new Date().toISOString().split('T')[0];
 
     // ===== IDEAS =====
     function renderIdeas() {
@@ -273,7 +286,11 @@
         height: 'auto',
         headerToolbar: { left: 'title', right: 'prev,next today' },
         titleFormat: { year: 'numeric', month: 'long' },
-        events: data.tasks.map(t => ({ title: t.text, start: t.date })),
+        events: data.tasks.map(t => ({
+          title: t.text,
+          start: t.date,
+          className: t.done ? 'event-done' : 'event-pending'
+        })),
         dateClick: info => { taskDate.value = info.dateStr; }
       });
       calendar.render();
@@ -281,8 +298,16 @@
     function updateCalendar() {
       if (!calendar) return;
       calendar.removeAllEvents();
-      data.tasks.forEach(t => calendar.addEvent({ title: t.text, start: t.date }));
+
+      data.tasks.forEach(t => {
+        calendar.addEvent({
+          title: t.text,
+          start: t.date,
+          className: t.done ? 'event-done' : 'event-pending'
+        });
+      });
     }
+
     
     // ===== Inicialización =====
     renderTasks();

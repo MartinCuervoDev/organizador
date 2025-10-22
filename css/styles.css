@@ -1,11 +1,4 @@
-:root {
-  --amarillo: #f8e84d;
-  --amarillo-strong: #ffeb3b;
-  --gris-oscuro: #1a1a1a;
-  --gris-medio: #2a2a2a;
-  --texto: #ffffff;
-}
-
+@charset "UTF-8";
 * {
   box-sizing: border-box;
 }
@@ -13,8 +6,8 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
-  background: var(--gris-oscuro);
-  color: var(--texto);
+  background: #1a1a1a;
+  color: #ffffff;
   padding: 2rem;
 }
 
@@ -32,7 +25,7 @@ h2 {
 }
 
 .bloque {
-  background: var(--gris-medio);
+  background: #2a2a2a;
   padding: 1.5rem;
   border-radius: 12px;
   margin-bottom: 2rem;
@@ -72,7 +65,7 @@ textarea {
 }
 
 button {
-  background: var(--amarillo);
+  background: #f8e84d;
   color: #000;
   font-weight: 600;
   border: none;
@@ -80,6 +73,12 @@ button {
   padding: 0.55rem 0.9rem;
   cursor: pointer;
   transition: 0.2s transform;
+}
+button#addIdea {
+  margin-top: 10px;
+}
+button#saveNote {
+  margin-top: 10px;
 }
 button:hover {
   transform: scale(1.05);
@@ -90,6 +89,46 @@ button.icon {
 }
 button.hidden {
   display: none;
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.check {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.check:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.check.checked {
+  background: #4caf50;
+  border-color: #4caf50;
+  position: relative;
+}
+
+.check.checked::after {
+  content: "✔";
+  position: absolute;
+  color: #fff;
+  font-size: 14px;
+  top: -2px;
+  left: 2px;
+}
+
+li.done span {
+  text-decoration: line-through;
+  opacity: 0.6;
 }
 
 .lista {
@@ -139,13 +178,16 @@ button.hidden {
 }
 
 #calendarContainer {
-  background: var(--amarillo);
+  --fc-border-color: #000;
+  --fc-event-bg-color:#24a1a1;
+  --fc-event-border-color: #24a1a1;
+  background: #f8e84d;
   color: #000;
   border-radius: 12px;
   padding: 0.8rem;
 }
 #calendarContainer .fc {
-  background: var(--amarillo);
+  background: #f8e84d;
   border-radius: 10px;
 }
 #calendarContainer .fc .fc-toolbar-title {
@@ -155,7 +197,7 @@ button.hidden {
 }
 #calendarContainer .fc .fc-button {
   background: #111;
-  color: var(--amarillo);
+  color: #f8e84d;
   border: none;
   border-radius: 8px;
   font-weight: 700;
@@ -163,11 +205,8 @@ button.hidden {
 #calendarContainer .fc .fc-button:hover {
   background: #333;
 }
-#calendarContainer .fc .fc-theme-standard .fc-scrollgrid {
-  border-color: #000;
-}
 #calendarContainer .fc .fc-day-today {
-  background: var(--amarillo-strong) !important;
+  background: #ffeb3b !important;
   border: 2px solid #000 !important;
   box-shadow: 0 0 10px rgba(255, 255, 0, 0.35);
 }
@@ -179,6 +218,36 @@ button.hidden {
 #calendarContainer .fc .fc-theme-standard td,
 #calendarContainer .fc .fc-theme-standard th {
   border: 1px solid #000;
+}
+#calendarContainer .fc .fc-scrollgrid-sync-inner {
+  background-color: black;
+}
+#calendarContainer .fc a.fc-col-header-cell-cushion {
+  color: white;
+}
+#calendarContainer .fc .fc-theme-standard .fc-scrollgrid {
+  border-color: #000;
+}
+#calendarContainer .fc {
+  /* Pendientes (por si querés definirles algo distinto) */
+}
+#calendarContainer .fc .fc-event.event-pending {
+  opacity: 1;
+}
+#calendarContainer {
+  /* Completadas: texto tachado y más apagado */
+}
+#calendarContainer .fc-event.event-done .fc-event-title {
+  text-decoration: line-through;
+  opacity: 0.6;
+  color: black !important;
+}
+#calendarContainer {
+  /* Si querés además que el fondo se vea más gris */
+}
+#calendarContainer .fc-event.event-done {
+  background-color: #666 !important;
+  border-color: #555 !important;
 }
 
 .footer {
