@@ -22,6 +22,9 @@
   document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('taskInput');
     const taskDate = document.getElementById('taskDate');
+    taskDate.addEventListener('click', () => {
+      taskDate.showPicker?.(); // fuerza abrir el selector de fecha
+    });
     const taskList = document.getElementById('taskList');
     const addTaskBtn = document.getElementById('addTask');
     const noteArea = document.getElementById('noteArea');
@@ -63,7 +66,12 @@
     if (t.date) {
       const small = document.createElement('small');
       small.className = 'meta';
-      small.textContent = `📅 ${t.date}`;
+
+      // 🔹 Convertir formato yyyy-mm-dd → dd/mm/yyyy
+      const [y, m, d] = t.date.split('-');
+      const fechaFormateada = `${d}/${m}/${y}`;
+
+      small.textContent = `📅 ${fechaFormateada}`;
       left.appendChild(small);
     }
 
