@@ -27,6 +27,7 @@
     });
     const taskList = document.getElementById('taskList');
     const addTaskBtn = document.getElementById('addTask');
+    const duplicateBtn = document.getElementById('duplicateTasks');
     const noteArea = document.getElementById('noteArea');
     const saveNoteBtn = document.getElementById('saveNote');
     const ideaArea = document.getElementById('ideaArea');
@@ -37,37 +38,65 @@
     // ===== Cargar datos =====
     load();
 
+    // === Fecha por defecto: hoy ===
+      const hoy = new Date();
+      const yyyy = hoy.getFullYear();
+      const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+      const dd = String(hoy.getDate()).padStart(2, '0');
+      const formatoISO = `${yyyy}-${mm}-${dd}`;
+      taskDate.value = formatoISO;
+
+
     // ===== TAREAS =====
-  function renderTasks() {
-    taskList.innerHTML = '';
-    data.tasks.forEach(t => {
-      const li = document.createElement('li');
-      li.className = t.done ? 'done' : '';
+      // === RENDER SOLO TAREAS DEL DÍA SELECCIONADO ===
+function renderTasks() {
+  taskList.innerHTML = '';
 
-      const left = document.createElement('div');
-      left.className = 'item-left';
+  const selectedDate = taskDate.value; // yyyy-mm-dd (valor del input type="date")
 
-      // === Cuadrado check a la izquierda ===
-      const check = document.createElement('div');
-      check.className = 'check';
-      if (t.done) check.classList.add('checked');
-      check.onclick = () => {
-        t.done = !t.done;
-        save();
-        renderTasks();
-        updateCalendar();
-      };
-      left.appendChild(check);
+  // Si no hay fecha seleccionada, no mostramos nada
+  if (!selectedDate) {
+    taskList.innerHTML = '<p class="no-tasks">🗓️ Seleccioná una fecha para ver sus tareas.</p>';
+    return;
+  }
 
-      const span = document.createElement('span');
-      span.textContent = t.text;
-      left.appendChild(span);
+  // Filtrar SOLO las tareas de ese día
+  const tareasFiltradas = data.tasks.filter(t => t.date === selectedDate);
+
+  if (tareasFiltradas.length === 0) {
+    taskList.innerHTML = '<p class="no-tasks">🗓️ No hay tareas para esta fecha.</p>';
+    return;
+  }
+
+  // Pintar tareas del día seleccionado
+  tareasFiltradas.forEach(t => {
+    const li = document.createElement('li');
+    li.className = t.done ? 'done' : '';
+
+    const left = document.createElement('div');
+    left.className = 'item-left';
+
+    // === Cuadrado check a la izquierda ===
+    const check = document.createElement('div');
+    check.className = 'check';
+    if (t.done) check.classList.add('checked');
+    check.onclick = () => {
+      t.done = !t.done;
+      save();
+      renderTasks();
+      updateCalendar();
+    };
+    left.appendChild(check);
+
+    const span = document.createElement('span');
+    span.textContent = t.text;
+    left.appendChild(span);
 
     if (t.date) {
       const small = document.createElement('small');
       small.className = 'meta';
 
-      // 🔹 Convertir formato yyyy-mm-dd → dd/mm/yyyy
+      // 🔹 Convertir formato yyyy-mm-dd → dd/mm/yyyy (solo visual)
       const [y, m, d] = t.date.split('-');
       const fechaFormateada = `${d}/${m}/${y}`;
 
@@ -91,6 +120,7 @@
     del.textContent = '🗑️';
     del.onclick = () => {
       if (confirm('¿Eliminar esta tarea?')) {
+        // Borramos por id (asegurate que todas las tareas tengan id)
         data.tasks = data.tasks.filter(x => x.id !== t.id);
         save();
         renderTasks();
@@ -122,9 +152,10 @@
   });
 }
 
+// === AGREGAR TAREA (manteniendo la fecha seleccionada para no "perder" la vista) ===
 function addTask() {
   const text = taskInput.value.trim();
-  const date = taskDate.value.trim();
+  const date = taskDate.value.trim(); // yyyy-mm-dd
   if (!text) return;
   if (!date) {
     alert('Por favor seleccioná una fecha antes de agregar la tarea.');
@@ -133,19 +164,104 @@ function addTask() {
     setTimeout(() => taskDate.classList.remove('error'), 1200);
     return;
   }
-  data.tasks.push({ id: Date.now(), text, date, done: false });
+
+  data.tasks.push({ id: Date.now() + Math.random(), text, date, done: false });
   save();
+
   taskInput.value = '';
-  taskDate.value = '';
+  // 🔸 IMPORTANTE: NO vaciamos taskDate.value, así seguimos viendo el mismo día
+  // Si vos sí querés limpiarla, entonces después de limpiar re-asignala a 'date':
+  // taskDate.value = date;
+
   renderTasks();
   updateCalendar();
 }
 
+// === EVENTOS EXISTENTES ===
 addTaskBtn.onclick = addTask;
 taskInput.onkeydown = e => { if (e.key === 'Enter') addTask(); };
 taskDate.onkeydown = e => { if (e.key === 'Enter') addTask(); };
 taskDate.onchange = () => taskDate.classList.remove('error');
+
+// 🔁 Al cambiar la fecha, actualizamos la lista y el calendario
+taskDate.addEventListener('change', () => {
+  renderTasks();
+  updateCalendar();
+});
+
+// Limitar a hoy en adelante (si así lo querés)
 taskDate.min = new Date().toISOString().split('T')[0];
+
+// === DUPLICAR TAREAS (acepta dd-mm-aaaa y asegura id en duplicadas) ===
+duplicateBtn.addEventListener('click', () => {
+  const fromDate = prompt("📅 Ingresá la fecha desde donde duplicar (formato: dd-mm-aaaa)");
+  const toDate = prompt("📅 Ingresá la fecha destino (formato: dd-mm-aaaa)");
+  if (!fromDate || !toDate) return alert("⚠️ Debes ingresar ambas fechas.");
+
+  // 🧩 Conversión de dd-mm-aaaa a aaaa-mm-dd
+  function toISO(dateStr) {
+    const [d, m, y] = dateStr.split('-');
+    return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+  }
+
+  const fromISO = toISO(fromDate);
+  const toISODate = toISO(toDate);
+
+  // 📋 Filtrar tareas del día origen
+  const tareasOrigen = data.tasks.filter(t => t.date === fromISO);
+
+  if (tareasOrigen.length === 0) {
+    alert(`No hay tareas en la fecha ${fromDate} para duplicar.`);
+    return;
+  }
+
+  // 🧱 Crear copias con la nueva fecha (con id nuevo)
+  const duplicadas = tareasOrigen.map(t => ({
+    id: Date.now() + Math.random(),
+    text: t.text,
+    date: toISODate,
+    done: false
+  }));
+
+  // 💾 Guardar y renderizar
+  data.tasks.push(...duplicadas);
+  save();
+
+  // Si estás parado en la fecha destino, las vas a ver al toque:
+  if (taskDate.value === toISODate) {
+    renderTasks();
+  }
+  updateCalendar();
+
+  alert(`✅ ${duplicadas.length} tareas duplicadas de ${fromDate} a ${toDate}`);
+});
+
+// === INICIALIZACIÓN: mostrar HOY por defecto si no hay fecha seleccionada ===
+    document.addEventListener('DOMContentLoaded', () => {
+  // Asegurarnos de que el input exista antes de usarlo
+  const taskDate = document.getElementById('taskDate');
+  if (!taskDate) return;
+
+  // 🗓️ Obtener fecha actual
+  const hoy = new Date();
+
+  // Armar formato ISO (para <input type="date">)
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+  const dd = String(hoy.getDate()).padStart(2, '0');
+  const formatoISO = `${yyyy}-${mm}-${dd}`;
+
+  // ✅ Establecer la fecha actual en el input
+  taskDate.value = formatoISO;
+
+  // 🔁 Renderizar las tareas y el calendario automáticamente
+  renderTasks();
+  updateCalendar();
+});
+
+
+
+
 
     // ===== IDEAS =====
     function renderIdeas() {
