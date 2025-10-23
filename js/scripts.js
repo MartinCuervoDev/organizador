@@ -292,56 +292,67 @@ confirmDuplicateBtn.addEventListener('click', () => {
 });
 
       // === EXPORTAR / IMPORTAR DATOS ===
-const exportBtn = document.getElementById('exportData');
-const importInput = document.getElementById('importData');
+      const exportBtn = document.getElementById('exportData');
+      const importInput = document.getElementById('importData');
 
-// 💾 Exportar datos actuales a un archivo .json
-exportBtn.addEventListener('click', () => {
-  const jsonData = JSON.stringify(data, null, 2);
-  const blob = new Blob([jsonData], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
+      // 💾 Exportar datos actuales a un archivo .json (compatible con móviles)
+            exportBtn.addEventListener('click', () => {
+              const jsonData = JSON.stringify(data, null, 2);
 
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `organizador_backup_${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
+              const esMovil = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+              if (esMovil) {
+                // En móviles mostramos el texto para copiar manualmente
+                const nuevaVentana = window.open("", "_blank");
+                nuevaVentana.document.write("<pre>" + jsonData + "</pre>");
+                nuevaVentana.document.title = "Backup Organizador";
+                alert("📱 En celular no se puede descargar directo. Se abrió una ventana con el backup: copiá y guardalo.");
+                return;
+              }
 
-  URL.revokeObjectURL(url);
-  alert('✅ Datos exportados correctamente.');
-});
+              // En escritorio sí descargamos el archivo normalmente
+              const blob = new Blob([jsonData], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `organizador_backup_${new Date().toISOString().split('T')[0]}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+              alert('✅ Datos exportados correctamente.');
+            });
+
 
 // 📂 Importar datos desde un archivo .json
-importInput.addEventListener('change', event => {
-  const file = event.target.files[0];
-  if (!file) return;
+        importInput.addEventListener('change', event => {
+          const file = event.target.files[0];
+          if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if (!imported.tasks) throw new Error("Archivo inválido");
+          const reader = new FileReader();
+          reader.onload = e => {
+            try {
+              const imported = JSON.parse(e.target.result);
+              if (!imported.tasks) throw new Error("Archivo inválido");
 
-      // Confirmación antes de sobrescribir
-      if (!confirm("⚠️ Esto reemplazará los datos actuales. ¿Continuar?")) return;
+              // Confirmación antes de sobrescribir
+              if (!confirm("⚠️ Esto reemplazará los datos actuales. ¿Continuar?")) return;
 
-      data.tasks = imported.tasks || [];
-      data.notesList = imported.notesList || [];
-      data.ideas = imported.ideas || [];
+              data.tasks = imported.tasks || [];
+              data.notesList = imported.notesList || [];
+              data.ideas = imported.ideas || [];
 
-      save();
-      renderTasks();
-      renderIdeas();
-      renderNotes();
-      updateCalendar();
+              save();
+              renderTasks();
+              renderIdeas();
+              renderNotes();
+              updateCalendar();
 
-      alert("✅ Datos importados con éxito.");
-    } catch (err) {
-      alert("❌ Archivo no válido o dañado.");
-      console.error(err);
-    }
-  };
-  reader.readAsText(file);
-});
+              alert("✅ Datos importados con éxito.");
+            } catch (err) {
+              alert("❌ Archivo no válido o dañado.");
+              console.error(err);
+            }
+          };
+          reader.readAsText(file);
+        });
 
 
 
