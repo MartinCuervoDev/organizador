@@ -41,6 +41,13 @@
         <input id="taskDate" type="date" />
         <button id="addTask">➕ Agregar</button>
         <button id="duplicateTasks">📄 Duplicar</button>
+        
+        <div id="duplicatePanel" class="hidden">
+          <label>Desde: <input type="date" id="fromDate"></label>
+          <label>Hasta: <input type="date" id="toDate"></label>
+          <button id="confirmDuplicate">Duplicar ✅</button>
+        </div>
+
 
       </div>
       <ul id="taskList" class="lista"></ul>

@@ -192,30 +192,58 @@ taskDate.addEventListener('change', () => {
 // Limitar a hoy en adelante (si así lo querés)
 taskDate.min = new Date().toISOString().split('T')[0];
 
-// === DUPLICAR TAREAS (acepta dd-mm-aaaa y asegura id en duplicadas) ===
+  // === DUPLICAR TAREAS (versión mejorada, móvil + escritorio) ===
+
+// Referencias a los elementos del panel (deben existir en el HTML)
+const duplicatePanel = document.getElementById('duplicatePanel');
+const fromInput = document.getElementById('fromDate');
+const toInput = document.getElementById('toDate');
+const confirmDuplicateBtn = document.getElementById('confirmDuplicate');
+
+// Mostrar u ocultar el panel al tocar 📄 Duplicar
 duplicateBtn.addEventListener('click', () => {
-  const fromDate = prompt("📅 Ingresá la fecha desde donde duplicar (formato: dd-mm-aaaa)");
-  const toDate = prompt("📅 Ingresá la fecha destino (formato: dd-mm-aaaa)");
-  if (!fromDate || !toDate) return alert("⚠️ Debes ingresar ambas fechas.");
+  duplicatePanel.classList.toggle('hidden');
+});
 
-  // 🧩 Conversión de dd-mm-aaaa a aaaa-mm-dd
-  function toISO(dateStr) {
-    const [d, m, y] = dateStr.split('-');
-    return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
-  }
+// Confirmar duplicado al presionar el botón ✅
+confirmDuplicateBtn.addEventListener('click', () => {
+  const fromDate = fromInput.value;
+  const toDate = toInput.value;
 
-  const fromISO = toISO(fromDate);
-  const toISODate = toISO(toDate);
-
-  // 📋 Filtrar tareas del día origen
-  const tareasOrigen = data.tasks.filter(t => t.date === fromISO);
-
-  if (tareasOrigen.length === 0) {
-    alert(`No hay tareas en la fecha ${fromDate} para duplicar.`);
+  if (!fromDate || !toDate) {
+    alert("⚠️ Debes seleccionar ambas fechas para duplicar.");
     return;
   }
 
-  // 🧱 Crear copias con la nueva fecha (con id nuevo)
+  // 🧩 Convertir de formato ISO (input date) a formato visual argentino (dd-mm-aaaa)
+  function toArg(dateStr) {
+    const [y, m, d] = dateStr.split('-');
+    return `${d}-${m}-${y}`;
+  }
+
+  // 🧩 Y al revés (por compatibilidad con tu código viejo)
+  function toISO(dateStr) {
+    const [d, m, y] = dateStr.split('-');
+    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+  }
+
+  // Si el usuario pone las fechas desde el selector <input type="date">
+  // ya vienen en formato ISO (2025-10-23), así que las usamos directo
+  const fromISO = fromDate.includes('-') && fromDate.length === 10 && fromDate[4] === '-'
+    ? fromDate
+    : toISO(fromDate);
+  const toISODate = toDate.includes('-') && toDate.length === 10 && toDate[4] === '-'
+    ? toDate
+    : toISO(toDate);
+
+  // 📋 Filtrar tareas del día origen
+  const tareasOrigen = data.tasks.filter(t => t.date === fromISO);
+  if (tareasOrigen.length === 0) {
+    alert(`No hay tareas en la fecha ${toArg(fromISO)} para duplicar.`);
+    return;
+  }
+
+  // 🧱 Crear copias con id nuevo
   const duplicadas = tareasOrigen.map(t => ({
     id: Date.now() + Math.random(),
     text: t.text,
@@ -227,14 +255,18 @@ duplicateBtn.addEventListener('click', () => {
   data.tasks.push(...duplicadas);
   save();
 
-  // Si estás parado en la fecha destino, las vas a ver al toque:
+  // Si estás parado en la fecha destino, actualizá la vista
   if (taskDate.value === toISODate) {
     renderTasks();
   }
   updateCalendar();
 
-  alert(`✅ ${duplicadas.length} tareas duplicadas de ${fromDate} a ${toDate}`);
+  alert(`✅ ${duplicadas.length} tareas duplicadas de ${toArg(fromISO)} a ${toArg(toISODate)}`);
+
+  // Ocultar el panel nuevamente
+  duplicatePanel.classList.add('hidden');
 });
+
 
 // === INICIALIZACIÓN: mostrar HOY por defecto si no hay fecha seleccionada ===
     document.addEventListener('DOMContentLoaded', () => {
