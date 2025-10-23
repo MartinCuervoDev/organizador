@@ -189,9 +189,6 @@ taskDate.addEventListener('change', () => {
   updateCalendar();
 });
 
-// Limitar a hoy en adelante (si así lo querés)
-taskDate.min = new Date().toISOString().split('T')[0];
-
   // === DUPLICAR TAREAS (versión mejorada, móvil + escritorio) ===
 
 // Referencias a los elementos del panel (deben existir en el HTML)
