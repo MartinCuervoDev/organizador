@@ -35,7 +35,18 @@
   <main class="contenedor">
     <!-- TAREAS -->
     <section class="bloque">
-      <h2>📝 Tareas</h2>
+        <div class="backup-panel">
+          <h2>📝 Tareas</h2>
+          <div>
+            <button id="exportData">💾 Exportar datos</button>
+            <label id="importLabel">
+              📂 Importar datos
+            <input id="importData" type="file" accept=".json" hidden />
+            </label>
+          </div>
+        </div>
+      
+
       <div class="agregar-tarea">
         <input id="taskInput" type="text" placeholder="Nueva tarea..." />
         <input id="taskDate" type="date" />

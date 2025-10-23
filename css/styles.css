@@ -156,6 +156,33 @@ li.done span {
   display: none;
 }
 
+.backup-panel {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#exportData,
+#importLabel {
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 15px;
+}
+
+#exportData:hover,
+#importLabel:hover {
+  background: #444;
+}
+
 .lista {
   list-style: none;
   padding: 0;
