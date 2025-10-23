@@ -8,6 +8,7 @@ header {
   justify-content: center;
   align-content: center;
   margin-bottom: 20px;
+  padding: 20px;
   background: #847420;
   border-radius: 10px 30px;
   box-shadow: 0.5rem 0.5rem 0.5rem 0.5rem rgba(121, 121, 32, 0.25);
@@ -183,14 +184,19 @@ li.done span {
   background: #444;
 }
 
+@media (max-width: 575px) {
+  #exportData,
+  #importLabel {
+    margin-bottom: 10px;
+  }
+}
 .lista {
   list-style: none;
   padding: 0;
   margin: 1rem 0 0 0;
 }
 .lista li,
-.lista .idea-item,
-.lista .note-item {
+.lista .idea-item {
   background: #1b1b1b;
   padding: 0.75rem 1rem;
   border-radius: 10px;
@@ -202,31 +208,40 @@ li.done span {
   line-height: 1.4;
 }
 .lista li .item-left,
-.lista .idea-item .item-left,
-.lista .note-item .item-left {
+.lista .idea-item .item-left {
   flex: 1;
 }
 .lista li .item-actions,
-.lista .idea-item .item-actions,
-.lista .note-item .item-actions {
+.lista .idea-item .item-actions {
   display: flex;
+  justify-content: space-between;
   gap: 0.4rem;
   align-items: center;
 }
 .lista li.done span,
-.lista .idea-item.done span,
-.lista .note-item.done span {
+.lista .idea-item.done span {
   text-decoration: line-through;
   opacity: 0.6;
   transition: 0.3s;
 }
 .lista li .meta,
-.lista .idea-item .meta,
-.lista .note-item .meta {
+.lista .idea-item .meta {
   display: block;
   margin-top: 0.25rem;
   opacity: 0.6;
   font-size: 0.85em;
+}
+
+.note-item {
+  background: #1b1b1b;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  line-height: 1.4;
 }
 
 #calendarContainer {

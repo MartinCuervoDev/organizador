@@ -506,7 +506,34 @@ confirmDuplicateBtn.addEventListener('click', () => {
           start: t.date,
           className: t.done ? 'event-done' : 'event-pending'
         })),
-        dateClick: info => { taskDate.value = info.dateStr; }
+        dateClick: info => {
+            // ✅ Establecer la fecha clickeada en el input principal
+            taskDate.value = info.dateStr;
+
+            // 🧠 Preguntar el texto de la tarea (solo en escritorio)
+            const esMovil = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+            
+            if (esMovil) {
+              // En móvil, abrimos el input normal de arriba para escribir la tarea
+              alert(`📅 Día seleccionado: ${info.dateStr}. Escribí tu tarea arriba y tocá ➕ Agregar.`);
+              taskInput.focus();
+            } else {
+              // En PC, mostramos un prompt directo para agregar rápido
+              const nuevaTarea = prompt(`📅 Nueva tarea para el ${info.dateStr}:`);
+              if (nuevaTarea && nuevaTarea.trim() !== '') {
+                data.tasks.push({
+                  id: Date.now() + Math.random(),
+                  text: nuevaTarea.trim(),
+                  date: info.dateStr,
+                  done: false
+                });
+                save();
+                renderTasks();
+                updateCalendar();
+              }
+            }
+          }
+
       });
       calendar.render();
     }
