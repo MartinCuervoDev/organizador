@@ -157,13 +157,24 @@
 
     // export / import
     async exportAll() {
-      const [tasks, ideas, notes] = await Promise.all([
-        this.getAllTasks(),
-        this.getAllIdeas(),
-        this.getAllNotes()
-      ]);
-      return { tasks, ideas, notes };
-    },
+    const [tasks, ideas, notes] = await Promise.all([
+      this.getAllTasks(),
+      this.getAllIdeas(),
+      this.getAllNotes()
+    ]);
+
+    const data = { tasks, ideas, notes };
+    
+    // ⚡ Guardamos en caché localStorage para carga instantánea
+    try {
+      localStorage.setItem('organizadorCache', JSON.stringify(data));
+    } catch (err) {
+      console.warn('No se pudo guardar el cache local:', err);
+    }
+
+    return data;
+  },
+
 
     async importAll(data) {
       if (Array.isArray(data.tasks)) {

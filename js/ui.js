@@ -126,15 +126,28 @@
     // "checkbox" visual
     const check = document.createElement('div');
     check.className = 'check' + (task.done ? ' checked' : '');
-    check.addEventListener('click', async () => {
-      task.done = !task.done;
-      await DB.updateTask(task);
+    check.addEventListener('click', () => {
+    task.done = !task.done;
 
+    // Cambiamos visualmente sin re-render completo
+    li.classList.toggle('done', task.done);
+    check.classList.toggle('checked', task.done);
+
+    // Actualizamos el calendario solo si existe ese evento
+    const calendarEvent = state.calendar.getEvents().find(e => e.startStr === task.date && e.title.includes(task.text));
+    if (calendarEvent) {
+      calendarEvent.setProp('classNames', [task.done ? 'event-done' : 'event-pending']);
+      calendarEvent.setProp('title', (task.done ? '✔ ' : '') + task.text);
+    } else {
+      updateCalendarEvents(); // fallback si no lo encuentra
+    }
+
+    // Guardamos asincrónicamente en IndexedDB (sin bloquear el render)
+    DB.updateTask(task).then(() => {
       showToast(task.done ? 'Tarea completada ✅' : 'Tarea marcada pendiente', 'info');
-
-      renderTasksForSelectedDate();
-      updateCalendarEvents();
     });
+  });
+
 
     const title = document.createElement('span');
     title.textContent = task.text;
@@ -317,30 +330,25 @@
 
   // --------- CALENDARIO ---------
   function initCalendar() {
-    state.calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      height: 'auto',
+  state.calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    height: 'auto',
+    lazyFetching: true, // ⚡ no renderiza todo hasta tener datos
 
-      // ✅ NUEVO: al hacer click en un día del calendario
-      dateClick: (info) => {
-        // info.dateStr viene como 'yyyy-mm-dd'
-        state.selectedDate = info.dateStr;
-
-        // actualizamos el input de fecha para que si agregás tarea se agregue a ese día
-        if (taskDateInput) {
-          taskDateInput.value = state.selectedDate;
-        }
-
-        // refrescamos header y lista
-        refreshDayHeader();
-        renderTasksForSelectedDate();
-
-        showToast(`Día seleccionado: ${formatSelectedDayLabel(state.selectedDate)}`, 'info');
+    dateClick: (info) => {
+      state.selectedDate = info.dateStr;
+      if (taskDateInput) {
+        taskDateInput.value = state.selectedDate;
       }
-    });
+      refreshDayHeader();
+      renderTasksForSelectedDate();
+      showToast(`Día seleccionado: ${formatSelectedDayLabel(state.selectedDate)}`, 'info');
+    }
+  });
 
-    state.calendar.render();
-  }
+  state.calendar.render();
+}
+
 
   function updateCalendarEvents() {
   if (!state.calendar) return;
