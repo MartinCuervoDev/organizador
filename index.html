@@ -3,96 +3,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- ===== SEO BÁSICO ===== -->
-    <title>Organizador</title>
-    <meta name="description" content="Organizador especialmente creado para que dejes acomodado tu día a día">
 
-    <!-- ===== OPEN GRAPH / FACEBOOK / LINKEDIN / WHATSAPP ===== -->
-    <meta property="og:title" content="Martin Cuervo | Desarrollador Web">
-    <!-- <meta property="og:description" content="Sitios web modernos, rápidos y personalizados con WordPress, HTML, CSS, JavaScript, PHP y Sass.">
-    <meta property="og:image" content="https://cuervomartindev.com/preview-mcportfolio-small-centered.jpg">
-    <meta property="og:url" content="https://cuervomartindev.com/"> -->
-    <meta property="og:type" content="website">
-    <meta property="og:locale" content="es_AR">
-    <!-- <meta property="og:image:alt" content="Martin Cuervo - Desarrollador Web"> -->
-    <!-- Opcional: elimina la advertencia del depurador -->
-    <!-- <meta property="fb:app_id" content="123456789012345"> -->
+  <title>Organizador</title>
+  <meta name="description" content="Organizador especialmente creado para que dejes acomodado tu día a día">
 
-    <!-- ===== TWITTER CARD ===== -->
-  
+  <meta property="og:title" content="Martin Cuervo | Desarrollador Web">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
 
   <!-- FullCalendar CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" />
-
-  <!-- Estilos propios -->
+  <!-- Estilos -->
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 <body>
-  <header class="header">
-    <h1>Organizador, agenda, hábitos y más...</h1>
-  </header>
+  <div id="app">
+    <header class="header">
+      <h1>Organizador, agenda, hábitos y más...</h1>
+    </header>
 
-  <main class="contenedor">
-    <!-- TAREAS -->
-    <section class="bloque">
+    <main class="contenedor">
+      <!-- TAREAS -->
+      <section class="bloque">
         <div class="backup-panel">
           <h2>📝 Tareas</h2>
           <div>
             <button id="exportData">💾 Exportar datos</button>
             <label id="importLabel">
               📂 Importar datos
-            <input id="importData" type="file" accept=".json" hidden />
+              <input id="importData" type="file" accept=".json" hidden />
             </label>
           </div>
         </div>
-      
 
-      <div class="agregar-tarea">
-        <input id="taskInput" type="text" placeholder="Nueva tarea..." />
-        <input id="taskDate" type="date" />
-        <button id="addTask">➕ Agregar</button>
-        <button id="duplicateTasks">📄 Duplicar</button>
-        
-        <div id="duplicatePanel" class="hidden">
-          <label>Desde: <input type="date" id="fromDate"></label>
-          <label>Hasta: <input type="date" id="toDate"></label>
-          <button id="confirmDuplicate">Duplicar ✅</button>
+        <div class="agregar-tarea">
+          <input id="taskInput" type="text" placeholder="Nueva tarea..." />
+          <input id="taskDate" type="date" />
+          <button id="addTask">➕ Agregar</button>
+          <button id="duplicateTasks">📄 Duplicar</button>
+
+          <div id="duplicatePanel" class="hidden">
+            <label>Desde: <input type="date" id="fromDate"></label>
+            <label>Hasta: <input type="date" id="toDate"></label>
+            <button id="confirmDuplicate">Duplicar ✅</button>
+          </div>
         </div>
 
+        <ul id="taskList" class="lista"></ul>
+      </section>
 
-      </div>
-      <ul id="taskList" class="lista"></ul>
-    </section>
+      <!-- IDEAS -->
+      <section class="bloque">
+        <h2>💭 Cosas que necesites recordar</h2>
+        <textarea id="ideaArea" placeholder="💭 Escribí algo para no olvidarlo..."></textarea>
+        <button id="addIdea">💡 Agregar</button>
+        <div id="ideasList" class="lista"></div>
+      </section>
 
-    <!-- IDEAS -->
-    <section class="bloque">
-      <h2>💭 Cosas que necesites recordar</h2>
-      <textarea id="ideaArea" placeholder="💭 Escribí algo para no olvidarlo..."></textarea>
-      <button id="addIdea">💡 Agregar</button>
-      <div id="ideasList" class="lista"></div>
-    </section>
+      <!-- NOTAS -->
+      <section class="bloque">
+        <h2>📒 Escribe lo que quieras</h2>
+        <textarea id="noteArea" placeholder="✏️ Usalo para escribir lo que vos quieras..."></textarea>
+        <button id="saveNote">💾 Guardar</button>
+        <div id="noteSavedInfo" class="note-item"></div>
+      </section>
 
-    <!-- NOTAS -->
-    <section class="bloque">
-      <h2>📒 Escribe lo que quieras</h2>
-      <textarea id="noteArea" placeholder="✏️ Usalo para escribir lo que vos quieras..."></textarea>
-      <button id="saveNote">💾 Guardar</button>
-    </section>
+      <!-- CALENDARIO -->
+      <section class="bloque">
+        <h2>📅 Calendario</h2>
+        <div id="calendarContainer"></div>
+      </section>
+    </main>
 
-    <!-- CALENDARIO -->
-    <section class="bloque">
-      <h2>📅 Calendario</h2>
-      <div id="calendarContainer"></div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    Copyright © MC-Portfolio 2025 Martín Cuervo — Powered by <span id="logo-slot"></span>
-  </footer>
+    <footer class="footer">
+      Copyright © MC-Portfolio 2025 Martín Cuervo — Powered by <span id="logo-slot"></span>
+    </footer>
+  </div>
 
   <!-- FullCalendar -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-  <!-- App -->
-  <script src="./js/scripts.js" defer></script>
+
+  <!-- App modules -->
+  <script src="./js/utils.js"></script>
+  <script src="./js/db.js"></script>
+  <script src="./js/ui.js"></script>
+  <script src="./js/main.js"></script>
 </body>
 </html>
