@@ -9,7 +9,7 @@ header {
   align-content: center;
   margin-bottom: 20px;
   padding: 20px;
-  background: #847420;
+  background: #b38f2a;
   border-radius: 10px 30px;
   box-shadow: 0.5rem 0.5rem 0.5rem 0.5rem rgba(121, 121, 32, 0.25);
 }
@@ -36,7 +36,7 @@ h2 {
 }
 
 .bloque {
-  background: #847420;
+  background: #b38f2a;
   padding: 1.5rem;
   border-radius: 12px;
   margin-bottom: 2rem;
@@ -188,8 +188,13 @@ li.done span {
   #exportData,
   #importLabel {
     margin-bottom: 10px;
+    text-align: center;
   }
 }
+#currentDayLabel {
+  color: black;
+}
+
 .lista {
   list-style: none;
   padding: 0;
@@ -238,7 +243,7 @@ li.done span {
   border-radius: 10px;
   margin-bottom: 0.6rem;
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem;
   line-height: 1.4;
@@ -287,6 +292,29 @@ li.done span {
   to {
     transform: translate(-50%, 20px);
     opacity: 0;
+  }
+}
+/* ======== MODO MOBILE (≤575px): sin flex ======== */
+@media (max-width: 575px) {
+  header,
+  .agregar-tarea,
+  .item-left,
+  .lista li,
+  .lista .idea-item,
+  .lista li .item-actions,
+  .lista .idea-item .item-actions,
+  .note-item,
+  .backup-panel,
+  #duplicatePanel {
+    display: block !important;
+  }
+  /* Espaciado y alineación para que no se pegue nada */
+  header > *,
+  .agregar-tarea > *,
+  .item-left > *,
+  .note-item > *,
+  .backup-panel > * {
+    margin-bottom: 10px;
   }
 }
 #calendarContainer {
@@ -381,6 +409,127 @@ li.done span {
   cursor: pointer !important;
 }
 
+/* ======== ESTILOS DEL CALENDARIO SEGÚN ESTADO ======== */
+/* Tareas pendientes (no hechas todavía) */
+#calendarContainer .fc-event.event-pending {
+  background-color: #d4af37 !important; /* dorado */
+  border-color: #b38f2a !important; /* dorado oscuro */
+  color: #000 !important;
+  font-weight: 600;
+}
+
+/* Tareas completas */
+#calendarContainer .fc-event.event-done {
+  background-color: #666 !important;
+  border-color: #555 !important;
+  color: #000 !important;
+  opacity: 0.7;
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+/* Por prolijidad, aseguramos que el texto del título dentro del evento siga las mismas reglas */
+#calendarContainer .fc-event.event-done .fc-event-title {
+  text-decoration: line-through;
+  opacity: 0.7;
+  color: #000 !important;
+}
+
+#calendarContainer .fc-event.event-pending .fc-event-title {
+  color: #000 !important;
+  text-decoration: none;
+  opacity: 1;
+}
+
+/* ======== ESTILOS DEL CALENDARIO SEGÚN ESTADO ======== */
+#calendarContainer .fc-event.event-pending {
+  background-color: #d4af37 !important; /* dorado */
+  border-color: #b38f2a !important; /* dorado oscuro */
+  color: #000 !important;
+  font-weight: 600;
+}
+
+#calendarContainer .fc-event.event-done {
+  background-color: #24a1a1 !important;
+  border-color: #24a1a1 !important;
+  color: #000 !important;
+  opacity: 0.7;
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+#calendarContainer .fc-event.event-done .fc-event-title {
+  text-decoration: line-through;
+  opacity: 0.7;
+  color: #000 !important;
+}
+
+#calendarContainer .fc-event.event-pending .fc-event-title {
+  color: #000 !important;
+  text-decoration: none;
+  opacity: 1;
+}
+
+/* ======== MODO MOBILE (≤575px): sin flex / layout en columna ======== */
+@media (max-width: 575px) {
+  header,
+  .agregar-tarea,
+  .item-left,
+  .lista li,
+  .lista .idea-item,
+  .lista li .item-actions,
+  .lista .idea-item .item-actions,
+  .note-item,
+  .backup-panel,
+  label,
+  #duplicatePanel,
+  #dayNav {
+    display: block !important;
+  }
+  /* Botonera de navegación de día */
+  #dayNav {
+    text-align: center;
+  }
+  #dayNav .day-nav-btn {
+    width: 45%;
+    margin-bottom: 8px;
+  }
+  #dayNav .day-label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  /* Que los hijos no queden todos apretados uno al lado del otro */
+  header > *,
+  .agregar-tarea > *,
+  .item-left > *,
+  .backup-panel > * {
+    margin-bottom: 10px;
+  }
+  /* Inputs y botones a ancho completo en mobile para que sean fáciles de tocar */
+  button,
+  input[type=text],
+  input[type=date],
+  textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+  /* Lista de tareas e ideas más legible en mobile */
+  .lista li,
+  .lista .idea-item,
+  .note-item {
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  /* Acciones (editar / borrar) debajo en mobile */
+  .item-actions {
+    margin-top: 10px;
+    text-align: right;
+  }
+}
 .footer {
   text-align: center;
   color: #ccc;
@@ -392,6 +541,10 @@ li.done span {
 .footer span {
   font-weight: bold;
   color: #ff0;
+}
+
+img {
+  width: 150px;
 }
 
 /*# sourceMappingURL=styles.css.map */
