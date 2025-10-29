@@ -12,7 +12,8 @@
   <meta property="og:locale" content="es_AR">
 
   <!-- FullCalendar CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/index.global.min.css" rel="stylesheet" />
+
   <!-- Estilos -->
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
@@ -38,15 +39,20 @@
 
         <div class="agregar-tarea">
           <input id="taskInput" type="text" placeholder="Nueva tarea..." />
+          <input id="taskDescription" type="text" placeholder="Descripción (opcional)..." />
           <input id="taskDate" type="date" />
           <button id="addTask">➕ Agregar</button>
           <button id="duplicateTasks">📄 Duplicar</button>
 
           <div id="duplicatePanel" class="hidden">
-            <label>Desde: <input type="date" id="fromDate"></label>
-            <label>Hasta: <input type="date" id="toDate"></label>
+            <label>De fecha: <input type="date" id="fromDate"></label>
+            <label>A fecha: <input type="date" id="toDate"></label>
             <button id="confirmDuplicate">Duplicar ✅</button>
           </div>
+        </div>
+
+        <div>
+          <h2>Ir a fecha</h2>
         </div>
 
         <ul id="taskList" class="lista"></ul>
@@ -80,26 +86,41 @@
           Copyright © MC-Portfolio 2025 Martín Cuervo — Powered by 
         </div>
         <div>
-          <a href="https://cuervomartindev.com/"><img src="./img/logo-blanco.png" alt="Logo MC"><span id="logo-slot"></span></a>
+          <a href="https://cuervomartindev.com/">
+            <img src="./img/logo-blanco.png" alt="Logo MC">
+            <span id="logo-slot"></span>
+          </a>
         </div>
       </div>
-      
     </footer>
   </div>
+
   <!-- Pantalla de carga -->
   <div id="loader-overlay">
     <div class="loader-spinner"></div>
     <p class="loader-text">Cargando datos...</p>
   </div>
+  <div id="action-loader" class="hidden action-loader">
+  <div class="spinner-mini"></div>
+  <span class="spinner-text">Guardando...</span>
+</div>
+
+<!-- Mini loader lateral -->
+<div id="mini-loader" class="mini-loader hidden">
+  <div class="spinner"></div>
+  <span id="mini-loader-text">Procesando...</span>
+</div>
 
 
-  <!-- FullCalendar -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
-  <!-- App modules -->
-  <script src="./js/utils.js"></script>
-  <script src="./js/db.js"></script>
-  <script src="./js/ui.js"></script>
-  <script src="./js/main.js"></script>
+  <!-- Librerías -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/index.global.min.js"></script>
+
+  <!-- Aplicación -->
+  <script type="module" src="./js/ui.js"></script>  
+  <script type="module" src="./js/main.js"></script>  
+  <!-- <script type="module" src="./js/db.js"></script>   -->
+  <!-- <script type="module" src="./js/utils.js"></script>   -->
+
 </body>
 </html>
